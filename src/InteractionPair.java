@@ -6,6 +6,7 @@ public class InteractionPair implements Comparable<InteractionPair>
 {
 	private int id; //the id of this individual
 	private TreeSet<Interaction> interactions;
+	private TreeSet<Interaction> idealInteractions;
 	
 	public InteractionPair(int id)
 	{
@@ -49,7 +50,7 @@ public class InteractionPair implements Comparable<InteractionPair>
 			//find the interaction and update the number of interactions of that duration
 			Interaction exclude = new Interaction(interactionDuration + 1);
 			SortedSet<Interaction> thisInter = interactions.subSet(inter, exclude);
-			if (thisInter.size() > 1)
+			if (thisInter.size() != 1)
 				System.out.println("Error in InteractionPair addInteraction() - more than one interaction");
 			Interaction exists = thisInter.first();
 			

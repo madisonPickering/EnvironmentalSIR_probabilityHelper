@@ -34,6 +34,11 @@ public class Interaction implements Comparable<Interaction>
 		return numInteractions;
 	}
 	
+	public double getProbability()
+	{
+		return probability;
+	}
+	
 	public void setProbability(double probability)
 	{
 		this.probability = probability;
@@ -63,7 +68,7 @@ public class Interaction implements Comparable<Interaction>
 		while (iter.hasNext())
 		{
 			Interaction interaction = iter.next();
-			totalInteractions += interaction.getDuration();
+			totalInteractions += interaction.getInteractions();
 		}
 		
 		//now, set the probabilities
@@ -79,12 +84,79 @@ public class Interaction implements Comparable<Interaction>
 		return set;
 	}
 	
+	/** Calculates a binomial probability given standard parameters
+	 * n, k, and P
+	 * @param n the number of bernoulli trials to perform
+	 * @param k the number of "successes" in those trials
+	 * @param P the probability of success for the bernoulli trials
+	 * @return a point on the binomial distribution given n, k, and P
+	 */
+	private double calculateBinomialProb(int n, int k, int P)
+	{
+		double nChooseK = nChooseK(n, k);
+		double pToTheK = Math.pow(P, k);
+		double pComplementToTheK = Math.pow((1-P), k);
+		
+		return (nChooseK * pToTheK * pComplementToTheK);
+	}
+	
+	/**Calculates n choose k
+	 * 
+	 * @param n the number of elements
+	 * @param k the number of elements to pick at a time from n
+	 * @return n choose k
+	 */
+	private int nChooseK(int n, int k)
+	{	
+		int nMinusK = n-k;
+	
+		//only need to evaluate numerator to the larger of the denoms (since they will cancel)
+		int numLimit;
+		boolean evaluateK = false; //dont need to evaluate the one that cancelled out
+		
+		if (k > nMinusK)
+		{
+			numLimit = k;
+			evaluateK = true;
+		}
+		else
+			numLimit = nMinusK;
+		
+		int numerator = factorial(n, numLimit);
+		int denominator;
+		if (evaluateK)
+			denominator = factorial(k, 1);
+		else
+			denominator = factorial(nMinusK, 1);
+		 
+		return (numerator / denominator);
+			
+	}
+	
+	/**Evaluates a factorial down to the value of limit
+	 * 
+	 * @param n the number to evaluate the factorial of
+	 * @param limit the number to evaluate the factorial down to
+	 * 		e.g., if n = 5 and limit = 2, function will evaluate 5 * 4 * 3
+	 * @return factorial the factorial of n, calculated down to limit
+	 */
+	private int factorial(int n, int limit)
+	{
+		int factorial = n;
+		for ( ; n > limit; n--)
+		{
+			factorial *= n;
+		}
+		return factorial;
+	}
+	
 	/** Formats an interaction's class data into that of a string **/
 	@Override
 	public String toString()
 	{
-		return "Duration: " + duration + " , #Interactions: " + numInteractions 
-				+ ", Probability: " + probability;
+		/*return "Duration: " + duration + " , #Interactions: " + numInteractions 
+				+ ", Probability: " + probability;*/
+		return duration + ", " + numInteractions + ", " + probability;
 	}
 	
 	

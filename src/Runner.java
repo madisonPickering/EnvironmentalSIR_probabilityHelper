@@ -7,8 +7,11 @@
  * Last modified 10/2/2020
  */
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Scanner;
 import java.util.SortedSet;
@@ -19,24 +22,25 @@ public class Runner {
 	private static final String INPUT_ROOT = "input";
 	private static final String OUTPUT_ROOT = "output";
 	
-	public static void main(String[] args) throws FileNotFoundException
+	/** Throws IOException since we do reading and writing of files **/
+	public static void main(String[] args) throws IOException
 	{
 		File inputFile = getInputFile();
 		TreeSet<InteractionPair> input = readInput(inputFile);
 		
 		//print contents, for testing
-		Iterator<InteractionPair> pairIter = input.iterator();
-		while (pairIter.hasNext())
-		{
-			InteractionPair thisHuman = pairIter.next();
-			System.out.println("Interactions for human " + thisHuman.getID());
-			TreeSet<Interaction> interactions = thisHuman.getInteractions();
-			Iterator<Interaction> iter = interactions.iterator();
-			
-			while (iter.hasNext())
-				System.out.println(iter.next().toString());
-			
-		}
+//		Iterator<InteractionPair> pairIter = input.iterator();
+//		while (pairIter.hasNext())
+//		{
+//			InteractionPair thisHuman = pairIter.next();
+//			System.out.println("Interactions for human " + thisHuman.getID());
+//			TreeSet<Interaction> interactions = thisHuman.getInteractions();
+//			Iterator<Interaction> iter = interactions.iterator();
+//			
+//			while (iter.hasNext())
+//				System.out.println(iter.next().toString());
+//			
+//		}
 		
 		logOutput(input);
 
@@ -79,7 +83,8 @@ public class Runner {
 		{
 			String line = lineScanner.nextLine();
 			tokens = new Scanner(line);
-			int id = tokens.nextInt();
+			int id = /*1;*/tokens.nextInt(); /*****(un)CHANGED THIS SO THAT WE CALCULATE AVG PROBS ***/
+			//tokens.next(); /********* REMOVEd THIS WHEN DONE ****/
 			//we dont care about who they had the interaction with, so just throw that info away
 			tokens.next();
 			int duration = tokens.nextInt();
@@ -124,8 +129,37 @@ public class Runner {
 		return input;
 	}
 	
-	public static void logOutput(TreeSet<InteractionPair> input)
+	/** Log (duration, probability) pairs as a .csv 
+	 * @throws IOException, since we are logging to a file
+	 **/
+	public static void logOutput(TreeSet<InteractionPair> input) throws IOException
 	{
+		File outputFile = new File(OUTPUT_ROOT + "/output.csv");
+		outputFile.createNewFile();
+		FileWriter inner = new FileWriter(outputFile);
+		BufferedWriter writer = new BufferedWriter(inner);
 		
+		//print contents, for testing
+		Iterator<InteractionPair> pairIter = input.iterator();
+		while (pairIter.hasNext())
+		{
+			InteractionPair thisHuman = pairIter.next();
+			writer.write("Interactions for human " + thisHuman.getID() + "\n");
+			TreeSet<Interaction> interactions = thisHuman.getInteractions();
+			Iterator<Interaction> iter = interactions.iterator();
+			
+			while (iter.hasNext())
+			{
+				Interaction thisInteraction = iter.next();
+				int duration = thisInteraction.getDuration();
+				double prob = thisInteraction.getProbability();
+				//writer.write(duration + ", " + prob + "\n");
+				writer.write(thisInteraction.toString() + "\n");
+			}
+			
+		}
+		
+		writer.close();
+		inner.close();
 	}
 }
