@@ -1,0 +1,15 @@
+This project contains the code used to calculate the probability of an interaction of a given length occuring between
+two individuals. Also used to perform the Chi^2 tests referenced in:
+	NetworkSIR and EnvironmentalSIR: Effective, Open-Source Epidemic
+	Modeling in the Absence of Data
+	
+	and,
+	
+	NetworkSIR and EnvironmentalSIR: Two Simple Distributed
+	Mechanisms for Modeling Epidemics
+	
+All code was written by @author Madison Pickering.
+(Copyright 2020 Madison Pickering)
+
+Note that this project is licensed under the GNU Public License v3.
+Please refer to file COPYING for more information.

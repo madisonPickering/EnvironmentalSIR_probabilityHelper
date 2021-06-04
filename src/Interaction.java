@@ -1,3 +1,20 @@
+/** Utility class used to represent the probability of an interaction (CPI)
+ * between two individuals
+ * 
+ * (Copyright 2020 Madison Pickering)
+ * This file is part of EnvironmentalSIR_probhelper.
+    EnvironmentalSIR_probhelper is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    EnvironmentalSIR_probhelper is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License
+    along with EnvironmentalSIR_probhelper.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.TreeSet;
@@ -6,7 +23,7 @@ public class Interaction implements Comparable<Interaction>
 {
 	private int duration; //the duration of this interaction
 	private double probability; //the probability that an individual has an interaction of this duration
-	private int numInteractions; //the number of times an interaction of this duration has occured
+	private double numInteractions; //the number of times an interaction of this duration has occured
 	
 	/**Makes an interaction - DOES NOT SPECIFY THE PROBABILITY OF THIS INTERACTION
 	 * OCCURING; setProbabilities() must be called after all an individuals interactions
@@ -19,6 +36,11 @@ public class Interaction implements Comparable<Interaction>
 		numInteractions = 1;
 	}
 	
+	public void setNumInteractions(double interactions)
+	{
+		numInteractions = interactions;
+	}
+	
 	public int getDuration()
 	{
 		return duration;
@@ -29,7 +51,7 @@ public class Interaction implements Comparable<Interaction>
 		numInteractions++;
 	}
 	
-	public int getInteractions()
+	public double getInteractions()
 	{
 		return numInteractions;
 	}
@@ -70,7 +92,7 @@ public class Interaction implements Comparable<Interaction>
 			Interaction interaction = iter.next();
 			totalInteractions += interaction.getInteractions();
 		}
-		
+
 		//now, set the probabilities
 		iter = set.iterator();
 		while (iter.hasNext())
@@ -84,71 +106,20 @@ public class Interaction implements Comparable<Interaction>
 		return set;
 	}
 	
-	/** Calculates a binomial probability given standard parameters
+	/** Calculates a Geometric probability given standard parameters
 	 * n, k, and P
-	 * @param n the number of bernoulli trials to perform
-	 * @param k the number of "successes" in those trials
+	 * @param k the number of bernoulli trials to perform
 	 * @param P the probability of success for the bernoulli trials
-	 * @return a point on the binomial distribution given n, k, and P
+	 * @return a point on the geometric probability distribution (PMF)
 	 */
-	private double calculateBinomialProb(int n, int k, int P)
+	private double calculateGeomProb(int k, int P)
 	{
-		double nChooseK = nChooseK(n, k);
 		double pToTheK = Math.pow(P, k);
 		double pComplementToTheK = Math.pow((1-P), k);
 		
-		return (nChooseK * pToTheK * pComplementToTheK);
+		return pToTheK * pComplementToTheK;
 	}
 	
-	/**Calculates n choose k
-	 * 
-	 * @param n the number of elements
-	 * @param k the number of elements to pick at a time from n
-	 * @return n choose k
-	 */
-	private int nChooseK(int n, int k)
-	{	
-		int nMinusK = n-k;
-	
-		//only need to evaluate numerator to the larger of the denoms (since they will cancel)
-		int numLimit;
-		boolean evaluateK = false; //dont need to evaluate the one that cancelled out
-		
-		if (k > nMinusK)
-		{
-			numLimit = k;
-			evaluateK = true;
-		}
-		else
-			numLimit = nMinusK;
-		
-		int numerator = factorial(n, numLimit);
-		int denominator;
-		if (evaluateK)
-			denominator = factorial(k, 1);
-		else
-			denominator = factorial(nMinusK, 1);
-		 
-		return (numerator / denominator);
-			
-	}
-	
-	/**Evaluates a factorial down to the value of limit
-	 * 
-	 * @param n the number to evaluate the factorial of
-	 * @param limit the number to evaluate the factorial down to
-	 * 		e.g., if n = 5 and limit = 2, function will evaluate 5 * 4 * 3
-	 * @return factorial the factorial of n, calculated down to limit
-	 */
-	private int factorial(int n, int limit)
-	{
-		int factorial = n;
-		for ( ; n > limit; n--)
-		{
-			factorial *= n;
-		}
-		return factorial;
-	}
 	
 	/** Formats an interaction's class data into that of a string **/
 	@Override
